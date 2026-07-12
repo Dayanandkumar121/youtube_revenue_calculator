@@ -1,0 +1,17 @@
+export const categoryMultiplier: Record<string, number> = {
+  Finance: 2.2,
+  Business: 2.0,
+  Technology: 1.8,
+  Education: 1.6,
+  Software: 1.8,
+  Health: 1.5,
+  Travel: 1.2,
+  Lifestyle: 1.1,
+  Food: 1.1,
+  Gaming: 1.0,
+  Entertainment: 0.9,
+  Comedy: 0.9,
+  Music: 0.8,
+  Sports: 1.1,
+  News: 1.4,
+};
