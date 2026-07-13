@@ -17,15 +17,25 @@ const app = express();
 
 app.use(helmet());
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? [
-            "https://yourdomain.com",
-            "https://www.yourdomain.com",
-          ]
-        : "*",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (Postman, server-to-server)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
@@ -33,14 +43,14 @@ app.use(
 /* ---------------- Rate Limiter ---------------- */
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 Minutes
+  windowMs: 15 * 60 * 1000,
   max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: {
     success: false,
     error: "Too many requests. Please try again later.",
   },
-  standardHeaders: true,
-  legacyHeaders: false,
 });
 
 app.use(limiter);
@@ -82,7 +92,7 @@ app.use((err, req, res, next) => {
 
   res.status(500).json({
     success: false,
-    message: "Internal Server Error",
+    message: err.message || "Internal Server Error",
   });
 });
 
